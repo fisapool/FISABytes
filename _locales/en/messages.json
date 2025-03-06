@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "FISABytes"
+  },
+  "appDescription": {
+    "message": "Simple tool to export/import cookies. Share online accounts without revealing your password."
+  },
+  "dialogTitle": {
+    "message": "FISABytes"
+  },
+  "confirmRemoveCookies": {
+    "message": "Do you want to remove all cookies of this website?"
+  }
+}
