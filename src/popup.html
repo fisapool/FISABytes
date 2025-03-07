@@ -6,6 +6,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FISABytes</title>
     <link rel="stylesheet" href="assets/popup.html.3bd9b4f3.css">
+    <style>
+      .tips-section {
+        background-color: #f8f9fa;
+        padding: 16px;
+        border-radius: 10px;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+
+      .tips-section h3 {
+        color: #2d3748;
+        margin: 0 0 12px 0;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .tips-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .tips-list li {
+        color: #4a5568;
+        padding: 6px 0;
+        font-size: 13px;
+        line-height: 1.5;
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .tips-list li:before {
+        content: counter(step);
+        counter-increment: step;
+        background: #e2e8f0;
+        color: #4a5568;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .error-section {
+        margin-top: 16px;
+        padding: 12px;
+        background-color: #fff8f8;
+        border: 1px solid #ffebeb;
+        border-radius: 8px;
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
@@ -23,6 +79,20 @@
           <button id="importBtn" class="action-button">
             <span class="button-text">Import Cookies</span>
           </button>
+          
+          <!-- Quick Start Tips -->
+          <div class="tips-section">
+            <h3>Quick Start:</h3>
+            <ul class="tips-list" style="counter-reset: step">
+              <li>Click "Import Cookies" and select your .json cookie file</li>
+              <li>Wait for import confirmation</li>
+            </ul>
+          </div>
+
+          <!-- Error Display -->
+          <div id="errorDisplay" class="error-section">
+            <div id="errorList" class="error-list"></div>
+          </div>
         </div>
         <div class="footer">
           <a href="https://shopee.com.my/fisa_trading" target="_blank" rel="noopener noreferrer" class="fisa-link">
@@ -34,5 +104,6 @@
     </div>
     <script src="assets/chunk-44885162.js"></script>
     <script src="assets/chunk-71c335f6.js"></script>
+    <script src="assets/error-handler.js"></script>
   </body>
 </html>
