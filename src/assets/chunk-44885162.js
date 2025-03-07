@@ -11,6 +11,7 @@ const cookieUtils = {
   async importCookies(data, tab) {
     let imported = 0;
     let failed = 0;
+    let failedCookies = [];
 
     // Handle both wrapped and unwrapped cookie formats
     const cookies = Array.isArray(data) ? data : 
@@ -22,43 +23,64 @@ const cookieUtils = {
         if (!cookie.name || !cookie.domain) {
           console.warn('Skipping invalid cookie:', cookie);
           failed++;
+          failedCookies.push({ name: cookie.name || 'unknown', reason: 'Missing required fields' });
           continue;
         }
 
         const cookieToSet = { ...cookie };
-        // Remove properties that can't be set
+        
+        // Clean up cookie data
         delete cookieToSet.hostOnly;
         delete cookieToSet.session;
         delete cookieToSet.storeId;
 
-        // Ensure path exists
-        if (!cookieToSet.path) {
-          cookieToSet.path = '/';
-        }
+        // Ensure valid path
+        cookieToSet.path = cookieToSet.path || '/';
 
-        // Convert expirationDate from number to Date if needed
-        if (typeof cookieToSet.expirationDate === 'number') {
-          const expiryDate = new Date(cookieToSet.expirationDate * 1000);
+        // Handle secure property
+        cookieToSet.secure = Boolean(cookieToSet.secure);
+
+        // Handle expiration
+        if (cookieToSet.expirationDate) {
+          const expiryDate = new Date(
+            typeof cookieToSet.expirationDate === 'number' 
+              ? cookieToSet.expirationDate * 1000 
+              : cookieToSet.expirationDate
+          );
+          
           if (expiryDate > new Date()) {
-            cookieToSet.expirationDate = Math.floor(cookieToSet.expirationDate);
+            cookieToSet.expirationDate = Math.floor(expiryDate.getTime() / 1000);
           } else {
             delete cookieToSet.expirationDate;
           }
         }
 
+        // Construct proper URL for the cookie
+        const protocol = cookieToSet.secure ? 'https://' : 'http://';
+        const cookieUrl = `${protocol}${cookieToSet.domain.startsWith('.') ? cookieToSet.domain.slice(1) : cookieToSet.domain}${cookieToSet.path}`;
+
         await chrome.cookies.set({
-          url: tab.url,
+          url: cookieUrl,
           ...cookieToSet
         });
+
         console.log('Successfully imported cookie:', cookieToSet.name);
         imported++;
       } catch (error) {
-        console.error('Failed to set cookie:', error);
+        console.error('Failed to set cookie:', cookie.name, error);
         failed++;
+        failedCookies.push({ 
+          name: cookie.name, 
+          reason: error.message || 'Unknown error'
+        });
       }
     }
 
-    return { imported, failed };
+    return { 
+      imported, 
+      failed,
+      failedCookies 
+    };
   }
 };
 
